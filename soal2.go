@@ -35,9 +35,16 @@ func sorter(inputan string) string {
 func home(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var inputan string
+	if len(r.FormValue("input")) == 0 {
+		http.Error(w, "please fill the input", http.StatusInternalServerError)
+		return
+	} else if len(r.URL.Query()["input"][0]) != 0 {
+		inputan = r.URL.Query()["input"][0]
+	} else {
+		inputan = r.FormValue("input")
+	}
 	if r.Method == "POST" {
 		var err error
-		inputan = r.FormValue("input")
 		data := []respon{
 			respon{inputan, sorter(inputan)},
 		}
@@ -49,7 +56,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 		w.Write(result)
 		return
 	} else if r.Method == "GET" {
-		inputan = r.URL.Query()["input"][0]
 		data := []respon{
 			respon{inputan, sorter(inputan)},
 		}
